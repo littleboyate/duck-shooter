@@ -63,13 +63,17 @@
 </head>
 <body>
 
-    <div id="gameMenu">
-        <h2>Select Game Time</h2>
-        <button onclick="startGame(30)">30 Seconds</button>
-        <button onclick="startGame(60)">1 Minute</button>
-        <button onclick="startGame(180)">3 Minutes</button>
-        <button onclick="showRanking()">View Ranking</button>
-    </div>
+<div id="gameMenu">
+    <h1>🦆 Duck Shooting Game 🎯</h1>
+    <p>Click on the ducks to score points! Different ducks give different points.</p>
+    <p>Golden Duck is smaller, faster, and gives 50 points!</p>
+    <h2>Select Game Time</h2>
+    <button onclick="startGame(30)">30 Seconds</button>
+    <button onclick="startGame(60)">1 Minute</button>
+    <button onclick="startGame(180)">3 Minutes</button>
+    <button onclick="showRanking()">View Ranking</button>
+    <p id="highScoreText">🏆 High Score: 0 points</p>
+</div>
 
     <div id="rankingMenu" style="display: none;">
         <h2>🏆 Top 5 Players 🏆</h2>
@@ -214,6 +218,16 @@ function showRanking() {
     gameMenu.style.display = "none";
     rankingMenu.style.display = "block";
 }
+
+    function updateHighScore() {
+    let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+    let highScore = rankings.length > 0 ? rankings[0].score : 0;
+    document.getElementById("highScoreText").innerText = `🏆 High Score: ${highScore} points`;
+}
+
+// เรียกใช้เมื่อโหลดเกม
+updateHighScore();
+        
 function showGameMenu() {
     rankingMenu.style.display = "none";
     gameMenu.style.display = "block";

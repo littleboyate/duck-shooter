@@ -122,7 +122,7 @@
         resizeCanvas();
 
         function createDuck(isGolden = false) {
-            let size = isGolden ? 30 : Math.floor(Math.random() * 50) + 80;
+            let size = isGolden ? 70 : Math.floor(Math.random() * 100) + 80;
             let duckData = isGolden ? goldenDuck : duckImages[Math.floor(Math.random() * duckImages.length)];
             let duckImg = new Image();
             duckImg.src = duckData.src;

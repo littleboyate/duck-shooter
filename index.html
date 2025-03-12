@@ -106,10 +106,21 @@ body {
             top: 10px;
             left: 10px;
         }
+        body {
+    cursor: none; /* 🔥 ซ่อน Cursor ปกติ */
+}
+
+#crosshair {
+    position: absolute;
+    width: 40px; /* ปรับขนาด */
+    height: 40px;
+    pointer-events: none; /* 🔥 ไม่ให้บังคลิก */
+    z-index: 5000;
+}
     </style>
 </head>
 <body>
-
+<img id="crosshair" src="https://w7.pngwing.com/pngs/422/51/png-transparent-sniper-aim-crosshair-cross-hairs-cross-wires-shooting-goal-cross-line-reticle-centre-thumbnail.png">
 <div id="gameMenu">
     <h1> Dr.soon Shooting Game 🎯</h1>
     <p>Click on the Dr.soon to score points! Different Dr.soon sticker give different points.</p>
@@ -123,7 +134,7 @@ body {
 </div>
     
 <div id="challengeBar">
-    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 100 points in 30 seconds! 🔥</p>
+    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 1500 points in 30 seconds! 🔥</p>
 </div>
 
     
@@ -219,7 +230,12 @@ body {
 
             update(); // ✅ เรียกใช้งาน update()
         }
+const crosshair = document.getElementById("crosshair");
 
+document.addEventListener("mousemove", (event) => {
+    crosshair.style.left = `${event.clientX - 20}px`;
+    crosshair.style.top = `${event.clientY - 20}px`;
+});
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 

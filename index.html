@@ -6,7 +6,6 @@
     <title>Duck Shooting Game</title>
 
     <style>
-
         html, body {
             margin: 0;
             padding: 0;
@@ -19,23 +18,21 @@
             height: 100vh;
         }
 
-      #gameMenu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 2000; /* 🔥 ทำให้เมนูอยู่ด้านหน้า */
-    width: 200px;
-
-}
+        #gameMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
         button {
             padding: 10px;
             font-size: 16px;
@@ -68,10 +65,6 @@
             border-radius: 5px;
             display: none;
         }
-  body {
-        background: url('https://miro.medium.com/v2/resize:fit:2400/1*ldbLbIb8LJ1qBFhuyaX5sw.png') no-repeat center center fixed;
-        background-size: cover;
-    }
     </style>
 </head>
 <body>
@@ -89,43 +82,6 @@
     <canvas id="gameCanvas"></canvas>
 
     <script>
-
-
-<script>
-    function startGame(seconds) {
-        console.log(`Game starting with ${seconds} seconds`); // ✅ Debugging
-        gameTime = seconds;
-        score = 0;
-        ducks = [];
-
-        for (let i = 0; i < 5; i++) {
-            ducks.push(createDuck());
-        }
-        ducks.push(createDuck(true));
-
-        gameMenu.style.display = "none";
-        timerDisplay.style.display = "block";
-        scoreDisplay.style.display = "block";
-        timeLeftSpan.textContent = gameTime;
-        scoreSpan.textContent = score;
-
-        gameTimer = setInterval(() => {
-            gameTime--;
-            timeLeftSpan.textContent = gameTime;
-
-            if (gameTime <= 0) {
-                endGame();
-            }
-        }, 1000);
-
-        update(); // ✅ ตรวจสอบว่ามีการเรียกฟังก์ชัน update()
-    }
-
-    // ✅ เชื่อมปุ่มเลือกเวลาให้แน่ใจว่าทำงานได้
-    document.getElementById("btn30").addEventListener("click", () => startGame(30));
-    document.getElementById("btn60").addEventListener("click", () => startGame(60));
-    document.getElementById("btn180").addEventListener("click", () => startGame(180));
-
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
@@ -158,29 +114,24 @@
 
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-        
-    if (gameTime > 0) {
-        requestAnimationFrame(update);
-    }
-}
 
-function createDuck(isGolden = false) {
-    let size = isGolden ? Math.floor(Math.random() * 20) + 30 : Math.floor(Math.random() * 110) + 250;
-    let duckData = isGolden ? goldenDuck : duckImages[Math.floor(Math.random() * duckImages.length)];
-    let duckImg = new Image();
-    duckImg.src = duckData.src;
+        function createDuck(isGolden = false) {
+            let size = Math.floor(Math.random() * 50) + 50;
+            let duckData = isGolden ? goldenDuck : duckImages[Math.floor(Math.random() * duckImages.length)];
+            let duckImg = new Image();
+            duckImg.src = duckData.src;
 
-    return {
-        x: Math.random() * (canvas.width - size),
-        y: Math.random() * (canvas.height - size),
-        width: size,
-        height: size,
-        speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
-        speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
-        image: duckImg,
-        points: duckData.points
-    };
-}
+            return {
+                x: Math.random() * (canvas.width - size),
+                y: Math.random() * (canvas.height - size),
+                width: size,
+                height: size,
+                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
+                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
+                image: duckImg,
+                points: duckData.points
+            };
+        }
 
         function startGame(seconds) {
             gameTime = seconds;
@@ -216,7 +167,7 @@ function createDuck(isGolden = false) {
             location.reload();
         }
 
-function update() {
+        function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             ducks.forEach((duck) => {
@@ -237,7 +188,6 @@ function update() {
                 requestAnimationFrame(update);
             }
         }
-
 
         canvas.addEventListener("click", (event) => {
             const mouseX = event.clientX;

@@ -63,22 +63,25 @@
     margin: 10px 0;
     text-align: center;
 }
-        #gameMenu, #rankingMenu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 2000;
-            width: 400px;
-        }
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+#gameMenu, #rankingMenu {
+    position: relative; /* เปลี่ยนจาก absolute เป็น relative */
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+    width: 400px;
+}
         button {
             padding: 10px;
             font-size: 16px;

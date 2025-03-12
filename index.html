@@ -187,12 +187,43 @@
                 requestAnimationFrame(update);
             }
         }
+function saveScore(name, score) {
+    let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+    rankings.push({ name, score });
 
-        function endGame() {
-            clearInterval(gameTimer);
-            let playerName = prompt("Enter your name:") || "Anonymous";
-            alert(`Time's up! Your score is ${score} points`);
-            location.reload();
+    // จัดเรียงจากคะแนนสูงสุดไปต่ำสุด และเก็บแค่ 5 อันดับแรก
+    rankings.sort((a, b) => b.score - a.score);
+    rankings = rankings.slice(0, 5);
+
+    localStorage.setItem("rankings", JSON.stringify(rankings));
+}
+function showRanking() {
+    rankingList.innerHTML = ""; // เคลียร์รายการก่อนแสดงผลใหม่
+    let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+
+    if (rankings.length === 0) {
+        rankingList.innerHTML = "<li>No ranking data available</li>";
+    } else {
+        rankings.forEach((player, index) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${index + 1}. ${player.name} - ${player.score} points`;
+            rankingList.appendChild(listItem);
+        });
+    }
+
+    gameMenu.style.display = "none";
+    rankingMenu.style.display = "block";
+}
+function showGameMenu() {
+    rankingMenu.style.display = "none";
+    gameMenu.style.display = "block";
+}
+    function endGame() {
+    clearInterval(gameTimer);
+    let playerName = prompt("Enter your name:") || "Anonymous";
+    saveScore(playerName, score);
+    alert(`Time's up! Your score is ${score} points`);
+    showRanking();
         }
 
         canvas.addEventListener("click", (event) => {

@@ -93,10 +93,8 @@
         let score = 0;
         let gameTime = 0;
         let gameTimer = null;
-        let comboCount = 1;
-        let lastShotTime = 0;
 
-        // 🔥 เป็ดหลายรูปแบบ (รวมเป็ดทอง & เป็ดบอส)
+        // 🔥 เป็ดหลายรูปแบบ
         const duckImages = {
             normal: [
                 "https://i.imgur.com/MTqvLRG.png",
@@ -108,24 +106,24 @@
             boss: "https://i.imgur.com/boss-duck.png"
         };
 
-        // 🏆 กำหนดคะแนนของเป็ดแต่ละตัว
+        // 🏆 คะแนนเป็ด
         const duckScores = {
             normal: 10,
-            golden: 200, // เป็ดทอง
-            boss: 500 // เป็ดบอส
+            golden: 200,
+            boss: 500
         };
 
         // 🎵 เพลงพื้นหลัง
         const backgroundMusic = new Audio("https://www.bensound.com/bensound-music/bensound-funkyelement.mp3");
         backgroundMusic.loop = true;
 
-        // 🔫 เสียงยิงเป็ด (เสียงเดียว)
+        // 🔫 เสียงยิงเป็ด
         const shootSound = new Audio("https://www.fesliyanstudios.com/play-mp3/4382");
 
         function createDuck() {
-            let size = Math.floor(Math.random() * 40) + 40; // 🔥 กำหนดขนาดเป็ด 40-80px
-            let isGolden = Math.random() < 0.2; // 🔥 เป็ดทองเกิด 20%
-            let isBoss = Math.random() < 0.1; // 🔥 เป็ดบอสเกิด 10%
+            let size = Math.floor(Math.random() * 40) + 40; // 🔥 เป็ดขนาด 40-80px
+            let isGolden = Math.random() < 0.2; // 🔥 เป็ดทอง 20%
+            let isBoss = Math.random() < 0.1; // 🔥 เป็ดบอส 10%
             let type = isBoss ? "boss" : isGolden ? "golden" : "normal";
             let imgSrc = type === "boss" ? duckImages.boss :
                          type === "golden" ? duckImages.golden :
@@ -207,8 +205,24 @@
         }
 
         canvas.addEventListener("click", (event) => {
-            shootSound.currentTime = 0;
-            shootSound.play();
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            ducks.forEach((duck, index) => {
+                if (
+                    mouseX >= duck.x &&
+                    mouseX <= duck.x + duck.width &&
+                    mouseY >= duck.y &&
+                    mouseY <= duck.y + duck.height
+                ) {
+                    score += duck.score;
+                    ducks.splice(index, 1);
+                    ducks.push(createDuck());
+                    scoreSpan.textContent = score;
+                    shootSound.currentTime = 0;
+                    shootSound.play();
+                }
+            });
         });
 
     </script>

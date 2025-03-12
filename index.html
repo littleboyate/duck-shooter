@@ -115,23 +115,23 @@
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
 
-        function createDuck(isGolden = false) {
-            let size = Math.floor(Math.random() * 150) + 250;
-            let duckData = isGolden ? goldenDuck : duckImages[Math.floor(Math.random() * duckImages.length)];
-            let duckImg = new Image();
-            duckImg.src = duckData.src;
+function createDuck(isGolden = false) {
+    let size = isGolden ? Math.floor(Math.random() * 20) + 30 : Math.floor(Math.random() * 110) + 250;
+    let duckData = isGolden ? goldenDuck : duckImages[Math.floor(Math.random() * duckImages.length)];
+    let duckImg = new Image();
+    duckImg.src = duckData.src;
 
-            return {
-                x: Math.random() * (canvas.width - size),
-                y: Math.random() * (canvas.height - size),
-                width: size,
-                height: size,
-                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
-                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
-                image: duckImg,
-                points: duckData.points
-            };
-        }
+    return {
+        x: Math.random() * (canvas.width - size),
+        y: Math.random() * (canvas.height - size),
+        width: size,
+        height: size,
+        speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
+        speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1) * (isGolden ? 2 : 1),
+        image: duckImg,
+        points: duckData.points
+    };
+}
 
         function startGame(seconds) {
             gameTime = seconds;

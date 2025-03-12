@@ -18,18 +18,61 @@
             width: 100vw;
             height: 100vh;
         }
+        #gameMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: black;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
+
+    <div id="gameMenu">
+        <h2>เลือกเวลาที่ต้องการเล่น</h2>
+        <button onclick="startGame(1)">1 นาที</button>
+        <button onclick="startGame(5)">5 นาที</button>
+        <button onclick="startGame(10)">10 นาที</button>
+    </div>
+
+    <div id="timer" style="display: none;">เวลา: <span id="timeLeft">0</span> วินาที</div>
 
     <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+        const timerDisplay = document.getElementById("timer");
+        const timeLeftSpan = document.getElementById("timeLeft");
+        const gameMenu = document.getElementById("gameMenu");
 
         let ducks = [];
         let score = 0;
+        let gameTime = 0;
+        let gameTimer = null;
 
         // โหลดรูปเป็ด
         const duckImage = new Image();
@@ -38,27 +81,52 @@
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-
-            // รีเซ็ตเป็ดเมื่อขนาดเปลี่ยน
-            ducks = [];
-            for (let i = 0; i < 5; i++) { // เพิ่มเป็ดให้เยอะขึ้น
-                ducks.push(createDuck());
-            }
         }
 
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas(); // เรียกใช้ครั้งแรก
 
-         function createDuck() {
-    let size = Math.floor(Math.random() * 50) + 100; // กำหนดขนาดเป็ดสุ่มระหว่าง 50px - 100px
-    return {
-        x: Math.random() * (canvas.width - size),
-        y: Math.random() * (canvas.height - size),
-        width: size,
-        height: size,
-        speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-        speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+        function createDuck() {
+            let size = Math.floor(Math.random() * 50) + 50; // สุ่มขนาดเป็ด 50-150px
+            return {
+                x: Math.random() * (canvas.width - size),
+                y: Math.random() * (canvas.height - size),
+                width: size,
+                height: size,
+                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
             };
+        }
+
+        function startGame(minutes) {
+            gameTime = minutes * 60; // แปลงนาทีเป็นวินาที
+            score = 0;
+            ducks = [];
+
+            for (let i = 0; i < 5; i++) {
+                ducks.push(createDuck());
+            }
+
+            gameMenu.style.display = "none"; // ซ่อนเมนู
+            timerDisplay.style.display = "block"; // แสดงตัวจับเวลา
+            timeLeftSpan.textContent = gameTime;
+
+            gameTimer = setInterval(() => {
+                gameTime--;
+                timeLeftSpan.textContent = gameTime;
+
+                if (gameTime <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            update();
+        }
+
+        function endGame() {
+            clearInterval(gameTimer);
+            alert(`หมดเวลา! คะแนนของคุณคือ ${score} คะแนน`);
+            location.reload(); // โหลดหน้าใหม่เพื่อเริ่มใหม่
         }
 
         function update() {
@@ -82,7 +150,9 @@
             ctx.font = "20px Arial";
             ctx.fillText(`Score: ${score}`, 10, 30);
 
-            requestAnimationFrame(update);
+            if (gameTime > 0) {
+                requestAnimationFrame(update);
+            }
         }
 
         canvas.addEventListener("click", (event) => {
@@ -103,7 +173,6 @@
             });
         });
 
-        update();
     </script>
 
 </body>

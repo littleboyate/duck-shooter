@@ -45,7 +45,7 @@
         }
 
         /* จับเวลาที่มุมขวาบน */
-        #timer {
+        #timer, #ammoDisplay {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -68,6 +68,7 @@
     </div>
 
     <div id="timer">เวลา: <span id="timeLeft">0</span> วินาที</div>
+    <div id="ammoDisplay">กระสุน: <span id="ammo">10</span></div>
 
     <canvas id="gameCanvas"></canvas>
 
@@ -75,33 +76,55 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
+        const ammoDisplay = document.getElementById("ammoDisplay");
         const timeLeftSpan = document.getElementById("timeLeft");
+        const ammoSpan = document.getElementById("ammo");
         const gameMenu = document.getElementById("gameMenu");
 
         let ducks = [];
         let score = 0;
         let gameTime = 0;
         let gameTimer = null;
+        let ammo = 10; // จำนวนกระสุน
+        let comboCount = 0;
+        let lastShotTime = 0;
 
-        // 🔥 เป็ดหลายรูปแบบ
+        // 🔥 เป็ดหลายรูปแบบ (รวมเป็ดทอง)
         const duckImages = [
-            "https://img5.pic.in.th/file/secure-sv1/plsss.png", // เป็ดแบบที่ 1
-            "https://img5.pic.in.th/file/secure-sv1/c02363ac-2b99-47d2-b378-e35074b8d3e3.png", // เป็ดแบบที่ 2
-            "https://img2.pic.in.th/pic/2a093d68-f19d-4bca-8056-7266caf1563b.jpg", // เป็ดแบบที่ 3
-            "https://img5.pic.in.th/file/secure-sv1/sooner.png"  // เป็ดแบบที่ 4
+            "https://i.imgur.com/MTqvLRG.png",
+            "https://i.imgur.com/dyA3xSe.png",
+            "https://i.imgur.com/3fkl3nM.png",
+            "https://i.imgur.com/FpHlrpE.png",
+            "https://i.imgur.com/yellow-duck.png" // เป็ดทอง
         ];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        // 🏆 กำหนดคะแนนของเป็ดแต่ละตัว
+        const duckScores = {
+            "https://i.imgur.com/MTqvLRG.png": 10,
+            "https://i.imgur.com/dyA3xSe.png": 20,
+            "https://i.imgur.com/3fkl3nM.png": 30,
+            "https://i.imgur.com/FpHlrpE.png": 50,
+            "https://i.imgur.com/yellow-duck.png": 200 // เป็ดทองให้เยอะ
+        };
 
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas(); // เรียกใช้ครั้งแรก
+        // 🎵 เพลงพื้นหลัง
+        const backgroundMusic = new Audio("https://www.bensound.com/bensound-music/bensound-funkyelement.mp3");
+        backgroundMusic.loop = true;
+
+        // 🔫 เสียงยิงเป็ดแบบสุ่ม
+        const shootSounds = [
+            new Audio("https://www.fesliyanstudios.com/play-mp3/4382"),
+            new Audio("https://www.fesliyanstudios.com/play-mp3/4383"),
+            new Audio("https://www.fesliyanstudios.com/play-mp3/4384"),
+            new Audio("https://www.fesliyanstudios.com/play-mp3/4385"),
+            new Audio("https://www.fesliyanstudios.com/play-mp3/4386")
+        ];
+        let currentSoundIndex = 0;
 
         function createDuck() {
-            let size = Math.floor(Math.random() * 50) + 150; // ขนาดสุ่ม 50-100px
-            let randomDuck = duckImages[Math.floor(Math.random() * duckImages.length)]; // เลือกรูปเป็ดแบบสุ่ม
+            let size = Math.floor(Math.random() * 50) + 50;
+            let isGolden = Math.random() < 0.1; // 10% โอกาสเป็นเป็ดทอง
+            let randomDuck = isGolden ? "https://i.imgur.com/yellow-duck.png" : duckImages[Math.floor(Math.random() * 4)];
             let duckImg = new Image();
             duckImg.src = randomDuck;
 
@@ -112,13 +135,15 @@
                 height: size,
                 speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
                 speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-                image: duckImg
+                image: duckImg,
+                score: duckScores[randomDuck]
             };
         }
 
         function startGame(minutes) {
-            gameTime = minutes * 60; // แปลงนาทีเป็นวินาที
+            gameTime = minutes * 60;
             score = 0;
+            ammo = 10;
             ducks = [];
 
             for (let i = 0; i < 5; i++) {
@@ -127,7 +152,11 @@
 
             gameMenu.style.display = "none";
             timerDisplay.style.display = "block";
+            ammoDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
+            ammoSpan.textContent = ammo;
+
+            backgroundMusic.play();
 
             gameTimer = setInterval(() => {
                 gameTime--;
@@ -143,52 +172,21 @@
 
         function endGame() {
             clearInterval(gameTimer);
+            backgroundMusic.pause();
             alert(`หมดเวลา! คะแนนของคุณคือ ${score} คะแนน`);
             location.reload();
         }
 
-        function update() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ducks.forEach((duck, index) => {
-                duck.x += duck.speedX;
-                duck.y += duck.speedY;
-
-                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
-                    duck.speedX *= -1;
-                }
-                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
-                    duck.speedY *= -1;
-                }
-
-                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
-            });
-
-            ctx.fillStyle = "black";
-            ctx.font = "20px Arial";
-            ctx.fillText(`Score: ${score}`, 10, 30);
-
-            if (gameTime > 0) {
-                requestAnimationFrame(update);
-            }
-        }
-
         canvas.addEventListener("click", (event) => {
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
+            if (ammo <= 0) return; // ถ้ากระสุนหมด ยิงไม่ได้
 
-            ducks.forEach((duck, index) => {
-                if (
-                    mouseX >= duck.x &&
-                    mouseX <= duck.x + duck.width &&
-                    mouseY >= duck.y &&
-                    mouseY <= duck.y + duck.height
-                ) {
-                    ducks.splice(index, 1);
-                    ducks.push(createDuck());
-                    score += 10;
-                }
-            });
+            ammo--;
+            ammoSpan.textContent = ammo;
+
+            let shoot = shootSounds[currentSoundIndex];
+            shoot.currentTime = 0;
+            shoot.play();
+            currentSoundIndex = (currentSoundIndex + 1) % shootSounds.length;
         });
 
     </script>

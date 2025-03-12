@@ -22,13 +22,14 @@
 #challengeBar {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100vw;
-    background: rgba(0, 0, 0, 0.8); /* พื้นหลังโปร่งใส */
+    left: 50%;
+    transform: translateX(-50%); /* 🔥 ทำให้แถบอยู่ตรงกลาง */
+    width: 60%; /* 🔥 ปรับให้ไม่เต็มจอ */
+    background: rgba(0, 0, 0, 0.8);
     text-align: center;
-    padding: 10px 0;
-    line-height: 1.5;
-    z-index: 3000; /* ทำให้แสดงอยู่หน้าสุด */
+    padding: 5px 0;
+    border-radius: 10px; /* 🔥 ทำให้แถบดูสวยขึ้น */
+    z-index: 3000;
 }
 
 @keyframes blinkingColors {

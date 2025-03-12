@@ -226,6 +226,13 @@ body {
             points: 50
         };
 
+            const backgroundMusic = new Audio("https://www.bensound.com/bensound-music/bensound-funkyelement.mp3");
+    backgroundMusic.loop = true;
+
+    // 🔫 เพิ่มเสียงยิงเป็ด
+    const shootSound = new Audio("https://www.fesliyanstudios.com/play-mp3/4382");
+
+
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -252,6 +259,7 @@ body {
         }
 
         function startGame(seconds) {
+             backgroundMusic.play();
             gameTime = seconds;
             score = 0;
             ducks = [];
@@ -352,7 +360,7 @@ function showGameMenu() {
 }
 function endGame() {
     clearInterval(gameTimer);
-    
+     backgroundMusic.pause(); // ⏸ หยุดเพลงเมื่อจบเกม
     // อัปเดตคะแนนใน Popup
     document.getElementById("popupScore").textContent = score;
 

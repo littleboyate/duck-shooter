@@ -109,10 +109,11 @@ body {
     </style>
 </head>
 <body>
+
 <div id="gameMenu">
-    <h1> Dr.soon Shooting </h1>
+    <h1> Dr.soon Shooting Game 🎯</h1>
     <p>Click on the Dr.soon to score points! Different Dr.soon sticker give different points.</p>
-    <p>Mini Dr.soon is smaller, faster, and gives 50 points!</p>
+    <p>mini Dr.soon is smaller, faster, and gives 50 points!</p>
     <h2>Select Game Time</h2>
     <button onclick="startGame(30)">30 Seconds</button>
     <button onclick="startGame(60)">1 Minute</button>
@@ -122,7 +123,7 @@ body {
 </div>
     
 <div id="challengeBar">
-    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 1000 points in 30 seconds! 🔥</p>
+    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 100 points in 30 seconds! 🔥</p>
 </div>
 
     
@@ -135,14 +136,14 @@ body {
     <div id="timer">Time: <span id="timeLeft">0</span> sec</div>
     <div id="scoreDisplay">Score: <span id="score">0</span></div>
 
-    <canvas id="Canvas"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
     <script>
-        const canvas = document.getElementById("Canvas");
+        const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
         const timeLeftSpan = document.getElementById("timeLeft");
-        const Menu = document.getElementById("Menu");
+        const gameMenu = document.getElementById("gameMenu");
         const rankingMenu = document.getElementById("rankingMenu");
         const rankingList = document.getElementById("rankingList");
         const scoreDisplay = document.getElementById("scoreDisplay");
@@ -150,8 +151,8 @@ body {
 
         let ducks = [];
         let score = 0;
-        let Time = 0;
-        let Timer = null;
+        let gameTime = 0;
+        let gameTimer = null;
 
         const duckImages = [
             { src: "https://img5.pic.in.th/file/secure-sv1/plsss.png", points: 5 },
@@ -190,8 +191,8 @@ body {
             };
         }
 
-        function start(seconds) {
-            Time = seconds;
+        function startGame(seconds) {
+            gameTime = seconds;
             score = 0;
             ducks = [];
 
@@ -200,19 +201,19 @@ body {
             }
             ducks.push(createDuck(true));
 
-            Menu.style.display = "none";
+            gameMenu.style.display = "none";
             rankingMenu.style.display = "none";
             timerDisplay.style.display = "block";
             scoreDisplay.style.display = "block";
-            timeLeftSpan.textContent = Time;
+            timeLeftSpan.textContent = gameTime;
             scoreSpan.textContent = score;
 
-            Timer = setInterval(() => {
-                Time--;
-                timeLeftSpan.textContent = Time;
+            gameTimer = setInterval(() => {
+                gameTime--;
+                timeLeftSpan.textContent = gameTime;
 
-                if (Time <= 0) {
-                    end();
+                if (gameTime <= 0) {
+                    endGame();
                 }
             }, 1000);
 
@@ -222,7 +223,7 @@ body {
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let speedMultiplier = Time <= 10 ? 1.5 : 1;
+            let speedMultiplier = gameTime <= 10 ? 1.5 : 1;
 
             ducks.forEach((duck) => {
                 duck.x += duck.speedX * speedMultiplier;
@@ -238,7 +239,7 @@ body {
                 ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
             });
 
-            if (Time > 0) {
+            if (gameTime > 0) {
                 requestAnimationFrame(update);
             }
         }
@@ -267,7 +268,7 @@ function showRanking() {
 
     }
 
-    Menu.style.display = "none";
+    gameMenu.style.display = "none";
     rankingMenu.style.display = "block";
 }
 
@@ -293,7 +294,6 @@ function showGameMenu() {
         }
 
         canvas.addEventListener("click", (event) => {
-              document.getElementById("shootSound").play(); 
             const mouseX = event.clientX;
             const mouseY = event.clientY;
 

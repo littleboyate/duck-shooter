@@ -33,7 +33,7 @@
 
         // โหลดรูปเป็ด
         const duckImage = new Image();
-        duckImage.src = "https://i.imgur.com/MTqvLRG.png"; // เปลี่ยนเป็นภาพเป็ดของคุณ
+        duckImage.src = "https://img5.pic.in.th/file/secure-sv1/plsss.png"; // เปลี่ยนเป็นภาพเป็ดของคุณ
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -49,14 +49,15 @@
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas(); // เรียกใช้ครั้งแรก
 
-        function createDuck() {
-            return {
-                x: Math.random() * (canvas.width - 50),
-                y: Math.random() * (canvas.height - 50),
-                width: 50,
-                height: 50,
-                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+         function createDuck() {
+    let size = Math.floor(Math.random() * 50) + 250; // กำหนดขนาดเป็ดสุ่มระหว่าง 50px - 100px
+    return {
+        x: Math.random() * (canvas.width - size),
+        y: Math.random() * (canvas.height - size),
+        width: size,
+        height: size,
+        speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+        speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
             };
         }
 

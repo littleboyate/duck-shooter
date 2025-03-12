@@ -159,6 +159,10 @@ body {
     </style>
 </head>
 <body>
+    <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2023/03/07/audio_f45ef904c6.mp3" type="audio/mpeg">
+</audio>
+
 <div id="popupContainer" style="display: none;">
     <div id="popup">
         <h2>Game Over!</h2>
@@ -252,6 +256,10 @@ body {
         }
 
         function startGame(seconds) {
+              let bgMusic = document.getElementById("bgMusic");
+    bgMusic.volume = 0.5; // 🔊 ปรับความดัง (0.0 - 1.0)
+    bgMusic.play(); // 🎶 เล่นเพลงเมื่อเริ่มเกม
+            
             gameTime = seconds;
             score = 0;
             ducks = [];

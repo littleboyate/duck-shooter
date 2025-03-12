@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duck Shooting Game</title>
+    <style>
+        canvas {
+            background: url('https://i.imgur.com/Cxagv.jpg'); /* เปลี่ยนเป็นภาพฉากหลังที่ต้องการ */
+            display: block;
+            margin: auto;
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 800;
+        canvas.height = 500;
+
+        const duckImage = new Image();
+        duckImage.src = "https://i.imgur.com/MTqvLRG.png"; // เปลี่ยนเป็นภาพเป็ดของคุณ
+
+        let ducks = [];
+        let score = 0;
+
+        function createDuck() {
+            return {
+                x: Math.random() * (canvas.width - 50),
+                y: Math.random() * (canvas.height - 50),
+                width: 50,
+                height: 50,
+                speedX: (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedY: (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1),
+            };
+        }
+
+        for (let i = 0; i < 3; i++) {
+            ducks.push(createDuck());
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ducks.forEach((duck, index) => {
+                duck.x += duck.speedX;
+                duck.y += duck.speedY;
+
+                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
+                    duck.speedX *= -1;
+                }
+                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
+                    duck.speedY *= -1;
+                }
+
+                ctx.drawImage(duckImage, duck.x, duck.y, duck.width, duck.height);
+            });
+
+            ctx.fillStyle = "black";
+            ctx.font = "20px Arial";
+            ctx.fillText(`Score: ${score}`, 10, 30);
+
+            requestAnimationFrame(update);
+        }
+
+        canvas.addEventListener("click", (event) => {
+            const mouseX = event.clientX - canvas.offsetLeft;
+            const mouseY = event.clientY - canvas.offsetTop;
+
+            ducks.forEach((duck, index) => {
+                if (
+                    mouseX >= duck.x &&
+                    mouseX <= duck.x + duck.width &&
+                    mouseY >= duck.y &&
+                    mouseY <= duck.y + duck.height
+                ) {
+                    ducks.splice(index, 1);
+                    ducks.push(createDuck());
+                    score += 10;
+                }
+            });
+        });
+
+        update();
+    </script>
+</body>
+</html>

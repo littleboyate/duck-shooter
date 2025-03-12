@@ -109,6 +109,45 @@ body {
         body {
     cursor: none; /* 🔥 ซ่อน Cursor ปกติ */
 }
+#popupContainer {
+    display: none; /* ซ่อนไว้ก่อน */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+}
+
+#popup {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+}
+
+#popup input {
+    width: 90%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#popup button {
+    padding: 10px;
+    background: #ff4500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
 #crosshair {
     position: absolute;
@@ -120,6 +159,16 @@ body {
     </style>
 </head>
 <body>
+<div id="popupContainer">
+    <div id="popup">
+        <h2>Game Over!</h2>
+        <p>Your Score: <span id="popupScore">0</span> points</p>
+        <label>Enter Your Name:</label>
+        <input type="text" id="playerName" placeholder="Your name">
+        <button onclick="submitScore()">Submit</button>
+    </div>
+</div>
+
 <img id="crosshair" src="https://img2.pic.in.th/pic/reticle-crosshair-red-icon-free-png-701751694974301y3cnksxiin-removebg-preview.png">
 <div id="gameMenu">
     <h1> Dr.soon Shooting Game </h1>
@@ -301,13 +350,27 @@ function showGameMenu() {
     rankingMenu.style.display = "none";
     gameMenu.style.display = "block";
 }
-    function endGame() {
+function endGame() {
     clearInterval(gameTimer);
-    let playerName = prompt("Enter your name:") || "Anonymous";
-    saveScore(playerName, score);
-    alert(`Time's up! Your score is ${score} points`);
-    showRanking();
-        }
+    
+    // อัปเดตคะแนนใน Popup
+    document.getElementById("popupScore").textContent = score;
+
+    // แสดง Popup
+    document.getElementById("popupContainer").style.display = "flex";
+}
+
+// เมื่อกดปุ่ม Submit ใน Popup
+function submitScore() {
+    let playerName = document.getElementById("playerName").value.trim();
+    if (playerName === "") playerName = "Anonymous";
+
+    saveScore(playerName, score); // บันทึกคะแนน
+    showRanking(); // แสดงตารางอันดับ
+
+    // ซ่อน Popup
+    document.getElementById("popupContainer").style.display = "none";
+}
 
         canvas.addEventListener("click", (event) => {
             const mouseX = event.clientX;

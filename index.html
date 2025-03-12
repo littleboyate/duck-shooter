@@ -260,11 +260,12 @@ function showRanking() {
     if (rankings.length === 0) {
         rankingList.innerHTML = "<li>No ranking data available</li>";
     } else {
-        rankings.forEach((player, index) => {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${index + 1}. ${player.name} - ${player.score} points`;
-            rankingList.appendChild(listItem);
-        });
+        rankings.forEach((player) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = `${player.name} - ${player.score} points`; // ❌ เอาเลขที่ซ้ำออก
+    rankingList.appendChild(listItem);
+});
+
     }
 
     gameMenu.style.display = "none";

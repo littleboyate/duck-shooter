@@ -20,34 +20,31 @@
         }
 
         /* เมนูเลือกเวลา */
-#gameMenu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;  /* จัดให้อยู่ตรงกลางแนวตั้ง */
-    justify-content: center; /* จัดให้อยู่ตรงกลางแนวนอน */
-    gap: 10px;
-    z-index: 1000;
-}
-
+        #gameMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            z-index: 1000;
         }
-       button {
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    background: white;
-    border: none;
-    width: 150px;
-    text-align: center;  /* ทำให้ปุ่มอยู่ตรงกลาง */
-}
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background: white;
+            border: none;
+            width: 150px;
+            text-align: center;
         }
 
         /* จับเวลาที่มุมขวาบน */
@@ -68,9 +65,9 @@
 
     <div id="gameMenu">
         <h2>เลือกเวลาที่ต้องการเล่น</h2>
-        <button onclick="startGame(1)">1 นาที</button>
-        <button onclick="startGame(5)">5 นาที</button>
-        <button onclick="startGame(10)">10 นาที</button>
+        <button onclick="startGame(30)">30 วินาที</button>
+        <button onclick="startGame(60)">1 นาที</button>
+        <button onclick="startGame(180)">3 นาที</button>
     </div>
 
     <div id="timer">เวลา: <span id="timeLeft">0</span> วินาที</div>
@@ -92,50 +89,42 @@
         let lastShotTime = 0;
 
         // 🔥 เป็ดหลายรูปแบบ (รวมเป็ดทอง & เป็ดบอส)
-        const duckImages = [
-            "https://img5.pic.in.th/file/secure-sv1/plsss.png", // เป็ดธรรมดา
+        const duckImages = {
+            normal: [
+                "https://img5.pic.in.th/file/secure-sv1/plsss.png", // เป็ดธรรมดา
             "https://img5.pic.in.th/file/secure-sv1/c02363ac-2b99-47d2-b378-e35074b8d3e3.png", // เป็ดธรรมดา
             "https://img5.pic.in.th/file/secure-sv1/sooner.png", // เป็ดธรรมดา
             "https://img5.pic.in.th/file/secure-sv1/b1d1ae54-d97f-4fd2-8752-69d463eefcc5.png", // เป็ดธรรมดา
-            "https://img2.pic.in.th/pic/soonc870d5e7db650b1c.png", // เป็ดทอง
-            "https://img2.pic.in.th/pic/bal-2m.png" // เป็ดบอส
-        ];
+            ],
+            golden: "https://img2.pic.in.th/pic/soonc870d5e7db650b1c.png",
+            boss:  "https://img2.pic.in.th/pic/bal-2m.png"
+        };
 
         // 🏆 กำหนดคะแนนของเป็ดแต่ละตัว
         const duckScores = {
-            "https://img5.pic.in.th/file/secure-sv1/plsss.png": 10,
-            "https://img5.pic.in.th/file/secure-sv1/c02363ac-2b99-47d2-b378-e35074b8d3e3.png": 20,
-            "https://img5.pic.in.th/file/secure-sv1/sooner.png": 30,
-            "https://img5.pic.in.th/file/secure-sv1/b1d1ae54-d97f-4fd2-8752-69d463eefcc5.png": 50,
-            "https://img2.pic.in.th/pic/soonc870d5e7db650b1c.png": 200, // เป็ดทอง
-            "https://img2.pic.in.th/pic/bal-2m.png": 500 // เป็ดบอส
+            normal: 10,
+            golden: 200, // เป็ดทอง
+            boss: 500 // เป็ดบอส
         };
 
         // 🎵 เพลงพื้นหลัง
         const backgroundMusic = new Audio("https://www.bensound.com/bensound-music/bensound-funkyelement.mp3");
         backgroundMusic.loop = true;
 
-        // 🔫 เสียงยิงเป็ด (เหลือแค่เสียงเดียว)
+        // 🔫 เสียงยิงเป็ด (เสียงเดียว)
         const shootSound = new Audio("https://www.fesliyanstudios.com/play-mp3/4382");
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
 
         function createDuck() {
             let size = Math.floor(Math.random() * 50) + 50;
             let isGolden = Math.random() < 0.1; // 10% เป็ดทอง
             let isBoss = Math.random() < 0.05; // 5% เป็ดบอส
-            let randomDuck = isBoss ? "https://i.imgur.com/boss-duck.png" :
-                             isGolden ? "https://i.imgur.com/yellow-duck.png" :
-                             duckImages[Math.floor(Math.random() * 4)];
+            let type = isBoss ? "boss" : isGolden ? "golden" : "normal";
+            let imgSrc = type === "boss" ? duckImages.boss :
+                         type === "golden" ? duckImages.golden :
+                         duckImages.normal[Math.floor(Math.random() * duckImages.normal.length)];
 
             let duckImg = new Image();
-            duckImg.src = randomDuck;
+            duckImg.src = imgSrc;
 
             return {
                 x: Math.random() * (canvas.width - size),
@@ -145,13 +134,14 @@
                 speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
                 speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
                 image: duckImg,
-                score: duckScores[randomDuck],
-                hp: isBoss ? 3 : 1 // ถ้าเป็นเป็ดบอส ให้มี HP 3
+                score: duckScores[type],
+                type: type,
+                hp: type === "boss" ? 3 : 1 // เป็ดบอสต้องยิง 3 ครั้ง
             };
         }
 
-        function startGame(minutes) {
-            gameTime = minutes * 60;
+        function startGame(seconds) {
+            gameTime = seconds;
             score = 0;
             ducks = [];
 
@@ -184,33 +174,41 @@
             location.reload();
         }
 
-        canvas.addEventListener("click", (event) => {
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let currentTime = Date.now();
-            if (currentTime - lastShotTime < 2000) {
-                comboCount++;
-            } else {
-                comboCount = 1;
-            }
-            lastShotTime = currentTime;
+            ducks.forEach((duck) => {
+                duck.x += duck.speedX;
+                duck.y += duck.speedY;
 
-            ducks.forEach((duck, index) => {
-                if (mouseX >= duck.x && mouseX <= duck.x + duck.width &&
-                    mouseY >= duck.y && mouseY <= duck.y + duck.height) {
-                    
-                    duck.hp--;
-                    if (duck.hp <= 0) {
-                        score += duck.score * comboCount;
-                        ducks.splice(index, 1);
-                        ducks.push(createDuck());
-                    }
-
-                    shootSound.currentTime = 0;
-                    shootSound.play();
+                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
+                    duck.speedX *= -1;
                 }
+                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
+                    duck.speedY *= -1;
+                }
+
+                if (duck.type === "golden") {
+                    ctx.strokeStyle = "gold";
+                    ctx.lineWidth = 5;
+                    ctx.strokeRect(duck.x, duck.y, duck.width, duck.height);
+                } else if (duck.type === "boss") {
+                    ctx.strokeStyle = "red";
+                    ctx.lineWidth = 5;
+                    ctx.strokeRect(duck.x, duck.y, duck.width, duck.height);
+                }
+
+                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
             });
+
+            if (gameTime > 0) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        canvas.addEventListener("click", (event) => {
+            shootSound.currentTime = 0;
+            shootSound.play();
         });
 
     </script>

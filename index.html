@@ -4,75 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duck Shooting Game</title>
-<style>
-    /* ทำให้ canvas เต็มจอ */
-    html, body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden; /* ป้องกันการเลื่อน */
-    }
-    canvas {
-        display: block; /* ป้องกัน scroll bar */
-        position: absolute;
-        width: 100vw;
-        height: 100vh;
-    }
-</style>
 
-<canvas id="gameCanvas"></canvas>
-
-<script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas(); // เรียกใช้ครั้งแรก
-
-    function gameLoop() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // ตัวอย่าง: วาดวงกลมตรงกลางหน้าจอ
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
-        ctx.fill();
-
-        requestAnimationFrame(gameLoop);
-    }
-
-    gameLoop();
-</script>
     <style>
-        
-    body {
-        cursor: url('https://i.imgur.com/mQraXiF.png'), crosshair;
-    }
-canvas {
-            background: url('https://miro.medium.com/v2/resize:fit:4800/format:webp/1*8QRpPpa88cUHbOVrkIQamw.png'); /* เปลี่ยนเป็นภาพฉากหลังที่ต้องการ */
+        /* ทำให้ canvas เต็มจอ */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
             display: block;
-            margin: auto;
-            border: 2px solid black;
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
 <body>
+
     <canvas id="gameCanvas"></canvas>
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 800;
-        canvas.height = 500;
-
-        const duckImage = new Image();
-        duckImage.src = "https://img5.pic.in.th/file/secure-sv1/plsss.png"; // เปลี่ยนเป็นภาพเป็ดของคุณ
 
         let ducks = [];
         let score = 0;
+
+        // โหลดรูปเป็ด
+        const duckImage = new Image();
+        duckImage.src = "https://i.imgur.com/MTqvLRG.png"; // เปลี่ยนเป็นภาพเป็ดของคุณ
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // รีเซ็ตเป็ดเมื่อขนาดเปลี่ยน
+            ducks = [];
+            for (let i = 0; i < 5; i++) { // เพิ่มเป็ดให้เยอะขึ้น
+                ducks.push(createDuck());
+            }
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas(); // เรียกใช้ครั้งแรก
 
         function createDuck() {
             return {
@@ -80,13 +55,9 @@ canvas {
                 y: Math.random() * (canvas.height - 50),
                 width: 50,
                 height: 50,
-                speedX: (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1),
-                speedY: (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
             };
-        }
-
-        for (let i = 0; i < 3; i++) {
-            ducks.push(createDuck());
         }
 
         function update() {
@@ -114,8 +85,8 @@ canvas {
         }
 
         canvas.addEventListener("click", (event) => {
-            const mouseX = event.clientX - canvas.offsetLeft;
-            const mouseY = event.clientY - canvas.offsetTop;
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
 
             ducks.forEach((duck, index) => {
                 if (
@@ -133,5 +104,6 @@ canvas {
 
         update();
     </script>
+
 </body>
 </html>

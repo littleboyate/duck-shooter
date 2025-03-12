@@ -71,12 +71,17 @@
 
     <canvas id="gameCanvas"></canvas>
 
+    <audio id="gunshotSound" src="gunshot.mp3"></audio>
+    <audio id="bgMusic" src="background.mp3" loop></audio>
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
         const timeLeftSpan = document.getElementById("timeLeft");
         const gameMenu = document.getElementById("gameMenu");
+        const gunshotSound = document.getElementById("gunshotSound");
+        const bgMusic = document.getElementById("bgMusic");
 
         let ducks = [];
         let score = 0;
@@ -100,10 +105,23 @@
         resizeCanvas(); // เรียกใช้ครั้งแรก
 
         function createDuck() {
-            let size = Math.floor(Math.random() * 50) + 50; // ขนาดสุ่ม 50-100px
-            let randomDuck = duckImages[Math.floor(Math.random() * duckImages.length)]; // เลือกรูปเป็ดแบบสุ่ม
+            let size = Math.floor(Math.random() * 50) + 50;
+            let duckType = Math.random();
             let duckImg = new Image();
-            duckImg.src = randomDuck;
+            let hp = 1;
+            let scoreValue = 10;
+
+            if (duckType < 0.1) {
+                duckImg.src = "https://i.imgur.com/yellow-duck.png";
+                scoreValue = 50;
+            } else if (duckType < 0.2) {
+                duckImg.src = "https://i.imgur.com/boss-duck.png";
+                hp = 3;
+                scoreValue = 30;
+                size *= 1.5;
+            } else {
+                duckImg.src = duckImages[Math.floor(Math.random() * duckImages.length)];
+            }
 
             return {
                 x: Math.random() * (canvas.width - size),
@@ -112,12 +130,14 @@
                 height: size,
                 speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
                 speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-                image: duckImg
+                image: duckImg,
+                hp: hp,
+                score: scoreValue
             };
         }
 
         function startGame(minutes) {
-            gameTime = minutes * 60; // แปลงนาทีเป็นวินาที
+            gameTime = minutes * 60;
             score = 0;
             ducks = [];
 
@@ -128,6 +148,7 @@
             gameMenu.style.display = "none";
             timerDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
+            bgMusic.play();
 
             gameTimer = setInterval(() => {
                 gameTime--;
@@ -143,8 +164,25 @@
 
         function endGame() {
             clearInterval(gameTimer);
-            alert(`หมดเวลา! คะแนนของคุณคือ ${score} คะแนน`);
-            location.reload();
+            bgMusic.pause();
+
+            let gameOverScreen = document.createElement("div");
+            gameOverScreen.innerHTML = `
+                <div style="
+                    position: fixed; 
+                    top: 50%; 
+                    left: 50%; 
+                    transform: translate(-50%, -50%);
+                    background: white; 
+                    padding: 20px; 
+                    text-align: center;
+                    border-radius: 10px;">
+                    <h2>🎯 เกมจบแล้ว! 🎯</h2>
+                    <p>คะแนนของคุณ: <strong>${score}</strong></p>
+                    <button onclick="location.reload()">🔄 เล่นใหม่</button>
+                </div>
+            `;
+            document.body.appendChild(gameOverScreen);
         }
 
         function update() {
@@ -174,23 +212,25 @@
         }
 
         canvas.addEventListener("click", (event) => {
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
+            gunshotSound.currentTime = 0;
+            gunshotSound.play();
 
             ducks.forEach((duck, index) => {
                 if (
-                    mouseX >= duck.x &&
-                    mouseX <= duck.x + duck.width &&
-                    mouseY >= duck.y &&
-                    mouseY <= duck.y + duck.height
+                    event.clientX >= duck.x &&
+                    event.clientX <= duck.x + duck.width &&
+                    event.clientY >= duck.y &&
+                    event.clientY <= duck.y + duck.height
                 ) {
-                    ducks.splice(index, 1);
-                    ducks.push(createDuck());
-                    score += 10;
+                    duck.hp--;
+                    if (duck.hp <= 0) {
+                        score += duck.score;
+                        ducks.splice(index, 1);
+                        ducks.push(createDuck());
+                    }
                 }
             });
         });
-
     </script>
 
 </body>

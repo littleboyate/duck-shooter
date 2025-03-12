@@ -4,6 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duck Shooting Game</title>
+ <style>
+        /* ปรับ CSS ของเมนู */
+        #gameMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000; /* ให้แน่ใจว่าอยู่ด้านบน */
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background: white;
+            border: none;
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gameMenu">
+        <h2>เลือกเวลาที่ต้องการเล่น</h2>
+        <button onclick="startGame(1)">1 นาที</button>
+        <button onclick="startGame(5)">5 นาที</button>
+        <button onclick="startGame(10)">10 นาที</button>
+    </div>
+
+    <script>
+        function startGame(minutes) {
+            console.log("เริ่มเกม " + minutes + " นาที"); // ตรวจสอบว่า onclick ทำงาน
+
+            // ซ่อนเมนูเมื่อเริ่มเกม
+            document.getElementById("gameMenu").style.display = "none";
+
+            // แสดงว่าเกมเริ่มแล้ว (สามารถเพิ่มโค้ดเกมต่อจากนี้ได้)
+            alert("เกมจะเล่นเป็นเวลา " + minutes + " นาที");
+        }
+    </script>
 
     <style>
         /* ทำให้ canvas เต็มจอ */

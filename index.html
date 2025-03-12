@@ -19,7 +19,7 @@
             width: 100vw;
             height: 100vh;
         }
-        #gameMenu {
+        #gameMenu, #rankingMenu {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -33,7 +33,7 @@
             flex-direction: column;
             gap: 10px;
             z-index: 2000;
-            width: 200px;
+            width: 250px;
         }
         button {
             padding: 10px;
@@ -41,7 +41,7 @@
             cursor: pointer;
             background: white;
             border: none;
-            width: 150px;
+            width: 200px;
         }
         #timer, #scoreDisplay {
             position: absolute;
@@ -68,6 +68,13 @@
         <button onclick="startGame(30)">30 Seconds</button>
         <button onclick="startGame(60)">1 Minute</button>
         <button onclick="startGame(180)">3 Minutes</button>
+        <button onclick="showRanking()">View Ranking</button>
+    </div>
+
+    <div id="rankingMenu" style="display: none;">
+        <h2>🏆 Top 5 Players 🏆</h2>
+        <ol id="rankingList"></ol>
+        <button onclick="showGameMenu()">Back to Menu</button>
     </div>
 
     <div id="timer">Time: <span id="timeLeft">0</span> sec</div>
@@ -81,6 +88,8 @@
         const timerDisplay = document.getElementById("timer");
         const timeLeftSpan = document.getElementById("timeLeft");
         const gameMenu = document.getElementById("gameMenu");
+        const rankingMenu = document.getElementById("rankingMenu");
+        const rankingList = document.getElementById("rankingList");
         const scoreDisplay = document.getElementById("scoreDisplay");
         const scoreSpan = document.getElementById("score");
 
@@ -105,7 +114,6 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
 
@@ -138,6 +146,7 @@
             ducks.push(createDuck(true));
 
             gameMenu.style.display = "none";
+            rankingMenu.style.display = "none";
             timerDisplay.style.display = "block";
             scoreDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
@@ -157,47 +166,42 @@
 
         function endGame() {
             clearInterval(gameTimer);
+            let playerName = prompt("Enter your name:") || "Anonymous";
+            
+            saveScore(playerName, score);
+
             alert(`Time's up! Your score is ${score} points`);
-            location.reload();
+            showRanking();
         }
 
-        function update() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function saveScore(name, score) {
+            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+            rankings.push({ name, score });
 
-            let speedMultiplier = gameTime <= 10 ? 1.5 : 1;
+            rankings.sort((a, b) => b.score - a.score);
+            rankings = rankings.slice(0, 5);
 
-            ducks.forEach((duck) => {
-                duck.x += duck.speedX * speedMultiplier;
-                duck.y += duck.speedY * speedMultiplier;
-
-                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
-                    duck.speedX *= -1;
-                }
-                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
-                    duck.speedY *= -1;
-                }
-
-                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
-            });
-
-            if (gameTime > 0) {
-                requestAnimationFrame(update);
-            }
+            localStorage.setItem("rankings", JSON.stringify(rankings));
         }
 
-        canvas.addEventListener("click", (event) => {
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
+        function showRanking() {
+            rankingList.innerHTML = "";
+            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
 
-            ducks.forEach((duck, index) => {
-                if (mouseX >= duck.x && mouseX <= duck.x + duck.width && mouseY >= duck.y && mouseY <= duck.y + duck.height) {
-                    score += duck.points;
-                    scoreSpan.textContent = score;
-                    ducks.splice(index, 1);
-                    ducks.push(createDuck(duck.points === 50));
-                }
+            rankings.forEach((player, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${index + 1}. ${player.name} - ${player.score} points`;
+                rankingList.appendChild(listItem);
             });
-        });
+
+            gameMenu.style.display = "none";
+            rankingMenu.style.display = "block";
+        }
+
+        function showGameMenu() {
+            rankingMenu.style.display = "none";
+            gameMenu.style.display = "block";
+        }
     </script>
 
 </body>

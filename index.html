@@ -1,23 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duck Shooter Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Duck Shooting Game</title>
+
+    <style>
+        /* ทำให้ canvas เต็มจอ */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* เมนูเลือกเวลา */
+        #gameMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background: white;
+            border: none;
+            width: 150px;
+        }
+
+        /* จับเวลาที่มุมขวาบน */
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: black;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <button id="startButton">Start Game</button>
-    <div id="gameInfo">
-        <span id="timer">Time: 60s</span>
-        <span id="score">Score: 0</span>
+
+    <div id="gameMenu">
+        <h2>เลือกเวลาที่ต้องการเล่น</h2>
+        <button onclick="startGame(1)">1 นาที</button>
+        <button onclick="startGame(5)">5 นาที</button>
+        <button onclick="startGame(10)">10 นาที</button>
     </div>
+
+    <div id="timer">เวลา: <span id="timeLeft">0</span> วินาที</div>
+
     <canvas id="gameCanvas"></canvas>
-    <div id="gameOverScreen">
-        <h1>Game Over</h1>
-        <p id="finalScore">Final Score: 0</p>
-        <button id="restartButton">Restart</button>
-    </div>
-    <script src="script.js"></script>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const timerDisplay = document.getElementById("timer");
+        const timeLeftSpan = document.getElementById("timeLeft");
+        const gameMenu = document.getElementById("gameMenu");
+
+        let ducks = [];
+        let score = 0;
+        let gameTime = 0;
+        let gameTimer = null;
+
+        // 🔥 เป็ดหลายรูปแบบ
+        const duckImages = [
+            "https://i.imgur.com/MTqvLRG.png", // เป็ดแบบที่ 1
+            "https://i.imgur.com/dyA3xSe.png", // เป็ดแบบที่ 2
+            "https://i.imgur.com/3fkl3nM.png", // เป็ดแบบที่ 3
+            "https://i.imgur.com/FpHlrpE.png"  // เป็ดแบบที่ 4
+        ];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas(); // เรียกใช้ครั้งแรก
+
+        function createDuck() {
+            let size = Math.floor(Math.random() * 50) + 50; // ขนาดสุ่ม 50-100px
+            let randomDuck = duckImages[Math.floor(Math.random() * duckImages.length)]; // เลือกรูปเป็ดแบบสุ่ม
+            let duckImg = new Image();
+            duckImg.src = randomDuck;
+
+            return {
+                x: Math.random() * (canvas.width - size),
+                y: Math.random() * (canvas.height - size),
+                width: size,
+                height: size,
+                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                image: duckImg
+            };
+        }
+
+        function startGame(minutes) {
+            gameTime = minutes * 60; // แปลงนาทีเป็นวินาที
+            score = 0;
+            ducks = [];
+
+            for (let i = 0; i < 5; i++) {
+                ducks.push(createDuck());
+            }
+
+            gameMenu.style.display = "none";
+            timerDisplay.style.display = "block";
+            timeLeftSpan.textContent = gameTime;
+
+            gameTimer = setInterval(() => {
+                gameTime--;
+                timeLeftSpan.textContent = gameTime;
+
+                if (gameTime <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            update();
+        }
+
+        function endGame() {
+            clearInterval(gameTimer);
+            alert(`หมดเวลา! คะแนนของคุณคือ ${score} คะแนน`);
+            location.reload();
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ducks.forEach((duck, index) => {
+                duck.x += duck.speedX;
+                duck.y += duck.speedY;
+
+                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
+                    duck.speedX *= -1;
+                }
+                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
+                    duck.speedY *= -1;
+                }
+
+                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
+            });
+
+            ctx.fillStyle = "black";
+            ctx.font = "20px Arial";
+            ctx.fillText(`Score: ${score}`, 10, 30);
+
+            if (gameTime > 0) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        canvas.addEventListener("click", (event) => {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            ducks.forEach((duck, index) => {
+                if (
+                    mouseX >= duck.x &&
+                    mouseX <= duck.x + duck.width &&
+                    mouseY >= duck.y &&
+                    mouseY <= duck.y + duck.height
+                ) {
+                    ducks.splice(index, 1);
+                    ducks.push(createDuck());
+                    score += 10;
+                }
+            });
+        });
+
+    </script>
+
 </body>
 </html>

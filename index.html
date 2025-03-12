@@ -110,7 +110,7 @@ body {
     cursor: none; /* 🔥 ซ่อน Cursor ปกติ */
 }
 #popupContainer {
-    display: none; /* ซ่อนไว้ก่อน */
+    display: none; /* ✅ ซ่อน Popup ตั้งแต่แรก */
     position: fixed;
     top: 0;
     left: 0;
@@ -159,7 +159,7 @@ body {
     </style>
 </head>
 <body>
-<div id="popupContainer">
+<div id="popupContainer" style="display: none;">
     <div id="popup">
         <h2>Game Over!</h2>
         <p>Your Score: <span id="popupScore">0</span> points</p>
@@ -356,7 +356,7 @@ function endGame() {
     // อัปเดตคะแนนใน Popup
     document.getElementById("popupScore").textContent = score;
 
-    // แสดง Popup
+    // แสดง Popup เมื่อเกมจบ
     document.getElementById("popupContainer").style.display = "flex";
 }
 

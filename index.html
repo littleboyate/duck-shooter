@@ -45,7 +45,7 @@
         }
 
         /* จับเวลาที่มุมขวาบน */
-        #timer, #ammoDisplay {
+        #timer {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -68,7 +68,6 @@
     </div>
 
     <div id="timer">เวลา: <span id="timeLeft">0</span> วินาที</div>
-    <div id="ammoDisplay">กระสุน: <span id="ammo">10</span></div>
 
     <canvas id="gameCanvas"></canvas>
 
@@ -76,18 +75,13 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
-        const ammoDisplay = document.getElementById("ammoDisplay");
         const timeLeftSpan = document.getElementById("timeLeft");
-        const ammoSpan = document.getElementById("ammo");
         const gameMenu = document.getElementById("gameMenu");
 
         let ducks = [];
         let score = 0;
         let gameTime = 0;
         let gameTimer = null;
-        let ammo = 10; // จำนวนกระสุน
-        let comboCount = 0;
-        let lastShotTime = 0;
 
         // 🔥 เป็ดหลายรูปแบบ (รวมเป็ดทอง)
         const duckImages = [
@@ -121,6 +115,14 @@
         ];
         let currentSoundIndex = 0;
 
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
         function createDuck() {
             let size = Math.floor(Math.random() * 50) + 50;
             let isGolden = Math.random() < 0.1; // 10% โอกาสเป็นเป็ดทอง
@@ -143,7 +145,6 @@
         function startGame(minutes) {
             gameTime = minutes * 60;
             score = 0;
-            ammo = 10;
             ducks = [];
 
             for (let i = 0; i < 5; i++) {
@@ -152,9 +153,7 @@
 
             gameMenu.style.display = "none";
             timerDisplay.style.display = "block";
-            ammoDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
-            ammoSpan.textContent = ammo;
 
             backgroundMusic.play();
 
@@ -177,16 +176,53 @@
             location.reload();
         }
 
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ducks.forEach((duck, index) => {
+                duck.x += duck.speedX;
+                duck.y += duck.speedY;
+
+                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
+                    duck.speedX *= -1;
+                }
+                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
+                    duck.speedY *= -1;
+                }
+
+                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
+            });
+
+            ctx.fillStyle = "black";
+            ctx.font = "20px Arial";
+            ctx.fillText(`Score: ${score}`, 10, 30);
+
+            if (gameTime > 0) {
+                requestAnimationFrame(update);
+            }
+        }
+
         canvas.addEventListener("click", (event) => {
-            if (ammo <= 0) return; // ถ้ากระสุนหมด ยิงไม่ได้
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
 
-            ammo--;
-            ammoSpan.textContent = ammo;
+            ducks.forEach((duck, index) => {
+                if (
+                    mouseX >= duck.x &&
+                    mouseX <= duck.x + duck.width &&
+                    mouseY >= duck.y &&
+                    mouseY <= duck.y + duck.height
+                ) {
+                    score += duck.score;
+                    ducks.splice(index, 1);
+                    ducks.push(createDuck());
 
-            let shoot = shootSounds[currentSoundIndex];
-            shoot.currentTime = 0;
-            shoot.play();
-            currentSoundIndex = (currentSoundIndex + 1) % shootSounds.length;
+                    let shoot = shootSounds[currentSoundIndex];
+                    shoot.currentTime = 0;
+                    shoot.play();
+                    currentSoundIndex = (currentSoundIndex + 1) % shootSounds.length;
+                }
+            });
         });
 
     </script>

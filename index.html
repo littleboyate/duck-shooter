@@ -89,6 +89,43 @@
     <canvas id="gameCanvas"></canvas>
 
     <script>
+
+
+<script>
+    function startGame(seconds) {
+        console.log(`Game starting with ${seconds} seconds`); // ✅ Debugging
+        gameTime = seconds;
+        score = 0;
+        ducks = [];
+
+        for (let i = 0; i < 5; i++) {
+            ducks.push(createDuck());
+        }
+        ducks.push(createDuck(true));
+
+        gameMenu.style.display = "none";
+        timerDisplay.style.display = "block";
+        scoreDisplay.style.display = "block";
+        timeLeftSpan.textContent = gameTime;
+        scoreSpan.textContent = score;
+
+        gameTimer = setInterval(() => {
+            gameTime--;
+            timeLeftSpan.textContent = gameTime;
+
+            if (gameTime <= 0) {
+                endGame();
+            }
+        }, 1000);
+
+        update(); // ✅ ตรวจสอบว่ามีการเรียกฟังก์ชัน update()
+    }
+
+    // ✅ เชื่อมปุ่มเลือกเวลาให้แน่ใจว่าทำงานได้
+    document.getElementById("btn30").addEventListener("click", () => startGame(30));
+    document.getElementById("btn60").addEventListener("click", () => startGame(60));
+    document.getElementById("btn180").addEventListener("click", () => startGame(180));
+
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");

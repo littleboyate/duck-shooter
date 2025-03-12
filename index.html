@@ -180,24 +180,26 @@ function createDuck(isGolden = false) {
         }
 
 function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 🔥 ถ้าเวลาเหลือน้อยกว่า 10 วินาที เป็ดจะวิ่งเร็วขึ้น 1.5 เท่า
-    let speedMultiplier = gameTime <= 20 ? 3 : 1;
+            ducks.forEach((duck) => {
+                duck.x += duck.speedX;
+                duck.y += duck.speedY;
 
-    ducks.forEach((duck) => {
-        duck.x += duck.speedX * speedMultiplier;
-        duck.y += duck.speedY * speedMultiplier;
+                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
+                    duck.speedX *= -1;
+                }
+                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
+                    duck.speedY *= -1;
+                }
 
-        if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
-            duck.speedX *= -1;
+                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
+            });
+
+            if (gameTime > 0) {
+                requestAnimationFrame(update);
+            }
         }
-        if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
-            duck.speedY *= -1;
-        }
-
-        ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
-    });
 
 
         canvas.addEventListener("click", (event) => {

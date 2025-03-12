@@ -156,9 +156,29 @@ body {
     pointer-events: none; /* 🔥 ไม่ให้บังคลิก */
     z-index: 5000;
 }
+        #toggleMusic {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 15px;
+    font-size: 16px;
+    background: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
+<audio id="bgMusic" loop>
+    <source src="https://drive.google.com/uc?export=download&id=11JV6dpn4iVSmw4tSuzO13DqZr_hF2iej" type="audio/mpeg">
+</audio>
+
+<button id="toggleMusic" onclick="toggleMusic()">🔊 Music On</button>
+
+    
 <div id="popupContainer" style="display: none;">
     <div id="popup">
         <h2>Game Over!</h2>
@@ -232,9 +252,6 @@ body {
         }
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-        // 🎵 เพลงพื้นหลัง
-        const backgroundMusic = new Audio("https://soundcloud.com/littles-419886160/videoplayback");
-        backgroundMusic.loop = true;
 
         // 🔫 เสียงยิงเป็ด
         const shootSound = new Audio("https://www.fesliyanstudios.com/play-mp3/4382");
@@ -257,6 +274,10 @@ body {
         }
 
         function startGame(seconds) {
+              let bgMusic = document.getElementById("bgMusic");
+    bgMusic.volume = 0.5; // 🔊 ปรับระดับเสียง
+    bgMusic.play(); // 🎶 เล่นเพลงเมื่อเริ่มเกม
+
             gameTime = seconds;
             score = 0;
             ducks = [];
@@ -272,9 +293,6 @@ body {
             scoreDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
             scoreSpan.textContent = score;
-
-               // 🔥 เล่นเพลงเมื่อเกมเริ่ม
-        backgroundMusic.play();
 
             gameTimer = setInterval(() => {
                 gameTime--;
@@ -358,6 +376,20 @@ function showGameMenu() {
     rankingMenu.style.display = "none";
     gameMenu.style.display = "block";
 }
+
+function toggleMusic() {
+    let bgMusic = document.getElementById("bgMusic");
+    let toggleButton = document.getElementById("toggleMusic");
+
+    if (bgMusic.paused) {
+        bgMusic.play();
+        toggleButton.innerHTML = "🔊 Music On";
+    } else {
+        bgMusic.pause();
+        toggleButton.innerHTML = "🔇 Music Off";
+    }
+}
+        
 function endGame() {
     clearInterval(gameTimer);
       backgroundMusic.pause(); // ⏸ หยุดเพลงเมื่อจบเกม

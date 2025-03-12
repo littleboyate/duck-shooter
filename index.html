@@ -19,6 +19,18 @@
             width: 100vw;
             height: 100vh;
         }
+#challengeBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.8); /* พื้นหลังโปร่งใส */
+    text-align: center;
+    padding: 10px 0;
+    line-height: 1.5;
+    z-index: 3000; /* ทำให้แสดงอยู่หน้าสุด */
+}
+
 @keyframes blinkingColors {
     0% { color: red; }
     20% { color: orange; }
@@ -36,8 +48,9 @@
 #challengeText {
     font-size: 18px;
     font-weight: bold;
-    text-align: center;
     animation: blinkingColors 2s linear infinite, fadeInOut 2s ease-in-out infinite;
+}
+
 }
 #extraBox {
     background: rgba(255, 255, 255, 0.2);
@@ -104,9 +117,12 @@
     <button onclick="showRanking()">View Ranking</button>
     <p id="highScoreText">🏆 High Score: 0 points</p>
 </div>
-<div id="extraBox">
-        <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 100 points in 30 seconds! 🔥</p>
-    </div>
+    
+<div id="challengeBar">
+    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 100 points in 30 seconds! 🔥</p>
+</div>
+
+    
     <div id="rankingMenu" style="display: none;">
         <h2>🏆 Top 5 Players 🏆</h2>
         <ol id="rankingList"></ol>

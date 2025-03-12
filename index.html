@@ -48,16 +48,21 @@
         }
 
         /* จับเวลาที่มุมขวาบน */
-        #timer {
+        #timer, #scoreDisplay {
             position: absolute;
             top: 10px;
-            right: 10px;
             font-size: 20px;
             color: black;
             background: white;
             padding: 10px;
             border-radius: 5px;
             display: none;
+        }
+        #timer {
+            right: 10px;
+        }
+        #scoreDisplay {
+            left: 10px;
         }
     </style>
 </head>
@@ -71,6 +76,7 @@
     </div>
 
     <div id="timer">เวลา: <span id="timeLeft">0</span> วินาที</div>
+    <div id="scoreDisplay">คะแนน: <span id="score">0</span></div>
 
     <canvas id="gameCanvas"></canvas>
 
@@ -79,6 +85,8 @@
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
         const timeLeftSpan = document.getElementById("timeLeft");
+        const scoreDisplay = document.getElementById("scoreDisplay");
+        const scoreSpan = document.getElementById("score");
         const gameMenu = document.getElementById("gameMenu");
 
         let ducks = [];
@@ -91,13 +99,13 @@
         // 🔥 เป็ดหลายรูปแบบ (รวมเป็ดทอง & เป็ดบอส)
         const duckImages = {
             normal: [
-                "https://img5.pic.in.th/file/secure-sv1/plsss.png", // เป็ดธรรมดา
-            "https://img5.pic.in.th/file/secure-sv1/c02363ac-2b99-47d2-b378-e35074b8d3e3.png", // เป็ดธรรมดา
-            "https://img5.pic.in.th/file/secure-sv1/sooner.png", // เป็ดธรรมดา
-            "https://img5.pic.in.th/file/secure-sv1/b1d1ae54-d97f-4fd2-8752-69d463eefcc5.png", // เป็ดธรรมดา
+                "https://i.imgur.com/MTqvLRG.png",
+                "https://i.imgur.com/dyA3xSe.png",
+                "https://i.imgur.com/3fkl3nM.png",
+                "https://i.imgur.com/FpHlrpE.png"
             ],
-            golden: "https://img2.pic.in.th/pic/soonc870d5e7db650b1c.png",
-            boss:  "https://img2.pic.in.th/pic/bal-2m.png"
+            golden: "https://i.imgur.com/yellow-duck.png",
+            boss: "https://i.imgur.com/boss-duck.png"
         };
 
         // 🏆 กำหนดคะแนนของเป็ดแต่ละตัว
@@ -115,9 +123,9 @@
         const shootSound = new Audio("https://www.fesliyanstudios.com/play-mp3/4382");
 
         function createDuck() {
-            let size = Math.floor(Math.random() * 50) + 50;
-            let isGolden = Math.random() < 0.1; // 10% เป็ดทอง
-            let isBoss = Math.random() < 0.05; // 5% เป็ดบอส
+            let size = Math.floor(Math.random() * 40) + 40; // 🔥 กำหนดขนาดเป็ด 40-80px
+            let isGolden = Math.random() < 0.2; // 🔥 เป็ดทองเกิด 20%
+            let isBoss = Math.random() < 0.1; // 🔥 เป็ดบอสเกิด 10%
             let type = isBoss ? "boss" : isGolden ? "golden" : "normal";
             let imgSrc = type === "boss" ? duckImages.boss :
                          type === "golden" ? duckImages.golden :
@@ -131,12 +139,12 @@
                 y: Math.random() * (canvas.height - size),
                 width: size,
                 height: size,
-                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedX: (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedY: (Math.random() * 2 + 1) * (Math.random() < 0.5 ? 1 : -1),
                 image: duckImg,
                 score: duckScores[type],
                 type: type,
-                hp: type === "boss" ? 3 : 1 // เป็ดบอสต้องยิง 3 ครั้ง
+                hp: type === "boss" ? 3 : 1
             };
         }
 
@@ -151,7 +159,9 @@
 
             gameMenu.style.display = "none";
             timerDisplay.style.display = "block";
+            scoreDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
+            scoreSpan.textContent = score;
 
             backgroundMusic.play();
 
@@ -186,16 +196,6 @@
                 }
                 if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
                     duck.speedY *= -1;
-                }
-
-                if (duck.type === "golden") {
-                    ctx.strokeStyle = "gold";
-                    ctx.lineWidth = 5;
-                    ctx.strokeRect(duck.x, duck.y, duck.width, duck.height);
-                } else if (duck.type === "boss") {
-                    ctx.strokeStyle = "red";
-                    ctx.lineWidth = 5;
-                    ctx.strokeRect(duck.x, duck.y, duck.width, duck.height);
                 }
 
                 ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);

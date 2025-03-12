@@ -83,9 +83,13 @@
         let gameTime = 0;
         let gameTimer = null;
 
-        // โหลดรูปเป็ด
-        const duckImage = new Image();
-        duckImage.src = "https://img5.pic.in.th/file/secure-sv1/plsss.png"; // เปลี่ยนเป็นภาพเป็ดของคุณ
+        // 🔥 เป็ดหลายรูปแบบ
+        const duckImages = [
+            "https://img5.pic.in.th/file/secure-sv1/plsss.png", // เป็ดแบบที่ 1
+            "https://img5.pic.in.th/file/secure-sv1/c02363ac-2b99-47d2-b378-e35074b8d3e3.png", // เป็ดแบบที่ 2
+            "https://img2.pic.in.th/pic/2a093d68-f19d-4bca-8056-7266caf1563b.jpg", // เป็ดแบบที่ 3
+            "https://img5.pic.in.th/file/secure-sv1/sooner.png"  // เป็ดแบบที่ 4
+        ];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -95,54 +99,22 @@
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas(); // เรียกใช้ครั้งแรก
 
-      const duckImages = [
-    "https://img5.pic.in.th/file/secure-sv1/c02363ac-2b99-47d2-b378-e35074b8d3e3.png", // เป็ดแบบที่ 2
-    "https://img2.pic.in.th/pic/2a093d68-f19d-4bca-8056-7266caf1563b.jpg", // เป็ดแบบที่ 3
-    "https://img5.pic.in.th/file/secure-sv1/sooner.png"  // เป็ดแบบที่ 4
-];
+        function createDuck() {
+            let size = Math.floor(Math.random() * 50) + 150; // ขนาดสุ่ม 50-100px
+            let randomDuck = duckImages[Math.floor(Math.random() * duckImages.length)]; // เลือกรูปเป็ดแบบสุ่ม
+            let duckImg = new Image();
+            duckImg.src = randomDuck;
 
-function createDuck() {
-    let size = Math.floor(Math.random() * 50) + 150; // สุ่มขนาดเป็ด 50-100px
-    let randomDuck = duckImages[Math.floor(Math.random() * duckImages.length)]; // เลือกรูปเป็ดแบบสุ่ม
-    let duckImg = new Image();
-    duckImg.src = randomDuck;
-
-    return {
-        x: Math.random() * (canvas.width - size),
-        y: Math.random() * (canvas.height - size),
-        width: size,
-        height: size,
-        speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-        speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
-        image: duckImg // **เก็บรูปเป็ดที่เลือกไว้**
-    };
-}
-
-function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ducks.forEach((duck, index) => {
-        duck.x += duck.speedX;
-        duck.y += duck.speedY;
-
-        if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
-            duck.speedX *= -1;
+            return {
+                x: Math.random() * (canvas.width - size),
+                y: Math.random() * (canvas.height - size),
+                width: size,
+                height: size,
+                speedX: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                speedY: (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1),
+                image: duckImg
+            };
         }
-        if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
-            duck.speedY *= -1;
-        }
-
-        ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height); // ใช้รูปเป็ดที่สุ่มมา
-    });
-
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Score: ${score}`, 10, 30);
-
-    if (gameTime > 0) {
-        requestAnimationFrame(update);
-    }
-}
 
         function startGame(minutes) {
             gameTime = minutes * 60; // แปลงนาทีเป็นวินาที
@@ -153,8 +125,8 @@ function update() {
                 ducks.push(createDuck());
             }
 
-            gameMenu.style.display = "none"; // ซ่อนเมนู
-            timerDisplay.style.display = "block"; // แสดงตัวจับเวลา
+            gameMenu.style.display = "none";
+            timerDisplay.style.display = "block";
             timeLeftSpan.textContent = gameTime;
 
             gameTimer = setInterval(() => {
@@ -172,7 +144,7 @@ function update() {
         function endGame() {
             clearInterval(gameTimer);
             alert(`หมดเวลา! คะแนนของคุณคือ ${score} คะแนน`);
-            location.reload(); // โหลดหน้าใหม่เพื่อเริ่มใหม่
+            location.reload();
         }
 
         function update() {
@@ -189,7 +161,7 @@ function update() {
                     duck.speedY *= -1;
                 }
 
-                ctx.drawImage(duckImage, duck.x, duck.y, duck.width, duck.height);
+                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
             });
 
             ctx.fillStyle = "black";

@@ -161,47 +161,53 @@
                 }
             }, 1000);
 
-            update();
+            update(); // ✅ เรียกใช้งาน update()
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let speedMultiplier = gameTime <= 10 ? 1.5 : 1;
+
+            ducks.forEach((duck) => {
+                duck.x += duck.speedX * speedMultiplier;
+                duck.y += duck.speedY * speedMultiplier;
+
+                if (duck.x <= 0 || duck.x + duck.width >= canvas.width) {
+                    duck.speedX *= -1;
+                }
+                if (duck.y <= 0 || duck.y + duck.height >= canvas.height) {
+                    duck.speedY *= -1;
+                }
+
+                ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
+            });
+
+            if (gameTime > 0) {
+                requestAnimationFrame(update);
+            }
         }
 
         function endGame() {
             clearInterval(gameTimer);
             let playerName = prompt("Enter your name:") || "Anonymous";
-            
-            saveScore(playerName, score);
-
             alert(`Time's up! Your score is ${score} points`);
-            showRanking();
+            location.reload();
         }
 
-        function saveScore(name, score) {
-            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            rankings.push({ name, score });
+        canvas.addEventListener("click", (event) => {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
 
-            rankings.sort((a, b) => b.score - a.score);
-            rankings = rankings.slice(0, 5);
-
-            localStorage.setItem("rankings", JSON.stringify(rankings));
-        }
-
-        function showRanking() {
-            rankingList.innerHTML = "";
-            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-
-            rankings.forEach((player, index) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = `${index + 1}. ${player.name} - ${player.score} points`;
-                rankingList.appendChild(listItem);
+            ducks.forEach((duck, index) => {
+                if (mouseX >= duck.x && mouseX <= duck.x + duck.width && mouseY >= duck.y && mouseY <= duck.y + duck.height) {
+                    score += duck.points;
+                    scoreSpan.textContent = score;
+                    ducks.splice(index, 1);
+                    ducks.push(createDuck(duck.points === 50));
+                }
             });
-
-            gameMenu.style.display = "none";
-            rankingMenu.style.display = "block";
-        }
-
-        function showGameMenu() {
-            rankingMenu.style.display = "none";
-            gameMenu.style.display = "block";
-        }
+        });
     </script>
 
 </body>

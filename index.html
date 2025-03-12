@@ -300,6 +300,7 @@ function showGameMenu() {
         }
 
         canvas.addEventListener("click", (event) => {
+              document.getElementById("shootSound").play(); 
             const mouseX = event.clientX;
             const mouseY = event.clientY;
 

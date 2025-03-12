@@ -4,6 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duck Shooting Game</title>
+<style>
+    /* ทำให้ canvas เต็มจอ */
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* ป้องกันการเลื่อน */
+    }
+    canvas {
+        display: block; /* ป้องกัน scroll bar */
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+    }
+</style>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas(); // เรียกใช้ครั้งแรก
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // ตัวอย่าง: วาดวงกลมตรงกลางหน้าจอ
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
+        ctx.fill();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
     <style>
         
     body {

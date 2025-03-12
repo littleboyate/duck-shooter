@@ -19,6 +19,26 @@
             width: 100vw;
             height: 100vh;
         }
+@keyframes blinkingColors {
+    0% { color: red; }
+    20% { color: orange; }
+    40% { color: yellow; }
+    60% { color: lime; }
+    80% { color: cyan; }
+    100% { color: violet; }
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+#challengeText {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    animation: blinkingColors 2s linear infinite, fadeInOut 2s ease-in-out infinite;
+}
 #extraBox {
     background: rgba(255, 255, 255, 0.2);
     padding: 10px;
@@ -85,7 +105,7 @@
     <p id="highScoreText">🏆 High Score: 0 points</p>
 </div>
 <div id="extraBox">
-        <p>🔥 New Challenge: Try to score more than 1000 points in 30 seconds! 🔥</p>
+        <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 100 points in 30 seconds! 🔥</p>
     </div>
     <div id="rankingMenu" style="display: none;">
         <h2>🏆 Top 5 Players 🏆</h2>

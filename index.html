@@ -109,11 +109,16 @@ body {
     </style>
 </head>
 <body>
-
+    <audio id="shootSound">
+    <source src="https://pixabay.com/th/sound-effects/bullet-hit-metal-84818/" type="audio/mpeg">
+</audio>
+<audio id="bgMusic" loop>
+    <source src="https://www.4s.io/mp3/0_wcFNFzjq/_online.html" type="audio/mpeg">
+</audio>
 <div id="gameMenu">
-    <h1> Dr.soon Shooting Game 🎯</h1>
+    <h1> Dr.soon Shooting </h1>
     <p>Click on the Dr.soon to score points! Different Dr.soon sticker give different points.</p>
-    <p>mini Dr.soon is smaller, faster, and gives 50 points!</p>
+    <p>Mini Dr.soon is smaller, faster, and gives 50 points!</p>
     <h2>Select Game Time</h2>
     <button onclick="startGame(30)">30 Seconds</button>
     <button onclick="startGame(60)">1 Minute</button>
@@ -123,7 +128,7 @@ body {
 </div>
     
 <div id="challengeBar">
-    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 100 points in 30 seconds! 🔥</p>
+    <p id="challengeText">🔥 <b>New Challenge:</b> Try to score more than 1000 points in 30 seconds! 🔥</p>
 </div>
 
     
@@ -136,14 +141,14 @@ body {
     <div id="timer">Time: <span id="timeLeft">0</span> sec</div>
     <div id="scoreDisplay">Score: <span id="score">0</span></div>
 
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="Canvas"></canvas>
 
     <script>
-        const canvas = document.getElementById("gameCanvas");
+        const canvas = document.getElementById("Canvas");
         const ctx = canvas.getContext("2d");
         const timerDisplay = document.getElementById("timer");
         const timeLeftSpan = document.getElementById("timeLeft");
-        const gameMenu = document.getElementById("gameMenu");
+        const Menu = document.getElementById("Menu");
         const rankingMenu = document.getElementById("rankingMenu");
         const rankingList = document.getElementById("rankingList");
         const scoreDisplay = document.getElementById("scoreDisplay");
@@ -151,8 +156,8 @@ body {
 
         let ducks = [];
         let score = 0;
-        let gameTime = 0;
-        let gameTimer = null;
+        let Time = 0;
+        let Timer = null;
 
         const duckImages = [
             { src: "https://img5.pic.in.th/file/secure-sv1/plsss.png", points: 5 },
@@ -191,8 +196,9 @@ body {
             };
         }
 
-        function startGame(seconds) {
-            gameTime = seconds;
+        function start(seconds) {
+          document.getElementById("bgMusic").play();
+            Time = seconds;
             score = 0;
             ducks = [];
 
@@ -201,19 +207,19 @@ body {
             }
             ducks.push(createDuck(true));
 
-            gameMenu.style.display = "none";
+            Menu.style.display = "none";
             rankingMenu.style.display = "none";
             timerDisplay.style.display = "block";
             scoreDisplay.style.display = "block";
-            timeLeftSpan.textContent = gameTime;
+            timeLeftSpan.textContent = Time;
             scoreSpan.textContent = score;
 
-            gameTimer = setInterval(() => {
-                gameTime--;
-                timeLeftSpan.textContent = gameTime;
+            Timer = setInterval(() => {
+                Time--;
+                timeLeftSpan.textContent = Time;
 
-                if (gameTime <= 0) {
-                    endGame();
+                if (Time <= 0) {
+                    end();
                 }
             }, 1000);
 
@@ -223,7 +229,7 @@ body {
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let speedMultiplier = gameTime <= 10 ? 1.5 : 1;
+            let speedMultiplier = Time <= 10 ? 1.5 : 1;
 
             ducks.forEach((duck) => {
                 duck.x += duck.speedX * speedMultiplier;
@@ -239,7 +245,7 @@ body {
                 ctx.drawImage(duck.image, duck.x, duck.y, duck.width, duck.height);
             });
 
-            if (gameTime > 0) {
+            if (Time > 0) {
                 requestAnimationFrame(update);
             }
         }
@@ -268,7 +274,7 @@ function showRanking() {
 
     }
 
-    gameMenu.style.display = "none";
+    Menu.style.display = "none";
     rankingMenu.style.display = "block";
 }
 
